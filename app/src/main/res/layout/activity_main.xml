@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_grey"
+    android:orientation="vertical"
+    tools:context="com.demo.android.musicplayer.MainActivity">
+
+   <include layout="@layout/action_bar"/>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.0"
+        android:background="@android:color/transparent">
+
+    </android.support.v4.view.ViewPager>
+<SeekBar
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/seekBar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+        <!--android:layout_below="@+id/pager">-->
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/btn_pre_local"
+            android:textColor="@color/grey_light"
+            android:text="@string/time"
+            android:textSize="20sp"
+            android:singleLine="true"
+            android:layout_alignTop="@+id/btn_pre_local" />
+
+        <ImageButton
+            android:id="@+id/btn_play_local"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/btn_next_local"
+            android:layout_toLeftOf="@+id/btn_next_local"
+            android:background="@drawable/pressed_to"
+            android:paddingRight="10dp"
+            android:paddingLeft="5dp"
+            android:src="@drawable/notification_play" />
+
+        <ImageButton
+            android:id="@+id/btn_next_local"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/btn_praised"
+            android:background="@drawable/pressed_to"
+            android:paddingRight="10dp"
+            android:src="@drawable/notification_next" />
+
+        <ImageButton
+            android:id="@+id/btn_pre_local"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/btn_play_local"
+            android:background="@drawable/pressed_to"
+            android:paddingRight="10dp"
+            android:src="@drawable/notification_pre" />
+
+        <ImageButton
+            android:id="@+id/btn_praised"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/pressed_to"
+            android:paddingRight="5dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/desk2_btn_love_prs" />
+
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MusicPlayer</string>
+    <string name="time">0:00 / 0:00</string>
+
+</resources>
