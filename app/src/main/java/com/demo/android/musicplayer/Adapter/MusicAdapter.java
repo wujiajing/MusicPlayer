@@ -14,16 +14,18 @@ import com.demo.android.musicplayer.Utils.MusicUtil;
 
 import java.util.List;
 
+import static com.demo.android.musicplayer.R.layout.list_item;
+
 /**
- * Created by kk on 2017/10/27.
+ * Created by kk on 2017/10/29.
  */
 
 public class MusicAdapter extends BaseAdapter {
     private Context context;
     private List<music> list;
 
-    public MusicAdapter(MainActivity mainActivity, List<music> list) {
-        this.context = mainActivity;
+    public MusicAdapter(Context context, List<music> list) {
+        this.context = context;
         this.list = list;
     }
 
@@ -44,34 +46,34 @@ public class MusicAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        ViewHolder holder = null;
+        ViewHolder holder;
         if (view == null) {
             holder = new ViewHolder();
             //引入布局
-            view = View.inflate(context, R.layout.list_item, null);
+            view = View.inflate(context, list_item,null);
             //实例化对象
             holder.song = (TextView) view.findViewById(R.id.song);
             holder.singer = (TextView) view.findViewById(R.id.singer);
-          //  holder.duration = (TextView) view.findViewById(R.id.time);
+        //    holder.duration = (TextView) view.findViewById(R.id.time);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
         }
         //给控件赋值
-        holder.song.setText(list.get(i).song.toString());
-        holder.singer.setText(list.get(i).singer.toString());
-    /*    //记住：时间需要转换一下
+        holder.song.setText(list.get(i).song);
+        holder.singer.setText(list.get(i).singer);
+    /*   //记住：时间需要转换一下
         int duration = list.get(i).duration;
         String time = MusicUtil.formatTime(duration);
-        holder.duration.setText(time);*/
-
+        holder.duration.setText(time);
+*/
         return view;
     }
 
-    class ViewHolder {
+    private class ViewHolder {
         TextView song;//歌曲名
         TextView singer;//歌手
-     //   TextView duration;//时长
+  //      TextView duration;//时长
     }
 
 }

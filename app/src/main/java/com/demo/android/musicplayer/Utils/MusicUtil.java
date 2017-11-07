@@ -7,7 +7,6 @@ import android.provider.MediaStore;
 import com.demo.android.musicplayer.Base.music;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by kk on 2017/10/27.
@@ -21,47 +20,36 @@ public class MusicUtil {
     /**
      * 扫描系统里面的音频文件，返回一个list集合
      */
-    public static List<music> getMusicData(Context context) {
-        List<music> list = new ArrayList<music>();
-        // 媒体库查询语句（写一个工具类MusicUtils）
-        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null,
-                null, MediaStore.Audio.AudioColumns.IS_MUSIC);
+    public static ArrayList<music> getMusicData(Context context) {
+        ArrayList<music> list = new ArrayList<music>();
+        // 媒体库查询语句（写一个工具类MusicUtil）
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                null, null, null, MediaStore.Audio.AudioColumns.IS_MUSIC);
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                music song = new music();
-                song.song = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
-                song.singer = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
-                song.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
-                song.duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-                song.size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE));
-                if (song.size > 1000 * 800) {
-                    // 注释部分是切割标题，分离出歌曲名和歌手 （本地媒体库读取的歌曲信息不规范）
-                    if (song.song.contains("-")) {
-                        String[] str = song.song.split("-");
-                        song.singer = str[0];
-                        song.song = str[1];
-                    }
-                    list.add(song);
-                }
+                music m_song = new music();
+                //歌曲编号
+                m_song.id = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID));
+                //歌曲名
+                m_song.song = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
+                //歌手
+                m_song.singer = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+                //歌曲全路径
+                m_song.path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                //歌曲时长
+                m_song.duration = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+                list.add(m_song);
             }
-            // 释放资源
+            // 关闭游标，释放资源
             cursor.close();
         }
         return list;
     }
 
-    /**
-     * 定义一个方法用来格式化获取到的时间
-     */
-    public static String formatTime(int time) {
-        if (time / 1000 % 60 < 10) {
-            return time / 1000 / 60 + ":0" + time / 1000 % 60;
 
-        } else {
-            return time / 1000 / 60 + ":" + time / 1000 % 60;
-        }
 
-    }
+
+
 }
 
 

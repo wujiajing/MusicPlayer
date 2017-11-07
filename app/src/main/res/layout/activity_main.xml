@@ -21,7 +21,8 @@
 <SeekBar
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/seekBar"/>
+    android:id="@+id/seekBar"
+    android:thumb="@drawable/seekbar_btn" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -32,46 +33,46 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/btn_pre_local"
+            android:layout_toLeftOf="@+id/btn_pre"
             android:textColor="@color/grey_light"
             android:text="@string/time"
             android:textSize="20sp"
             android:singleLine="true"
-            android:layout_alignTop="@+id/btn_pre_local" />
+            android:layout_alignTop="@+id/btn_pre" />
 
         <ImageButton
-            android:id="@+id/btn_play_local"
+            android:id="@+id/btn_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/btn_next_local"
-            android:layout_toLeftOf="@+id/btn_next_local"
+            android:layout_alignTop="@+id/btn_next"
+            android:layout_toLeftOf="@+id/btn_next"
             android:background="@drawable/pressed_to"
             android:paddingRight="10dp"
             android:paddingLeft="5dp"
             android:src="@drawable/notification_play" />
 
         <ImageButton
-            android:id="@+id/btn_next_local"
+            android:id="@+id/btn_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/btn_praised"
+            android:layout_toLeftOf="@+id/btn_to_favor"
             android:background="@drawable/pressed_to"
             android:paddingRight="10dp"
             android:src="@drawable/notification_next" />
 
         <ImageButton
-            android:id="@+id/btn_pre_local"
+            android:id="@+id/btn_pre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/btn_play_local"
+            android:layout_toLeftOf="@+id/btn_play"
             android:background="@drawable/pressed_to"
             android:paddingRight="10dp"
             android:src="@drawable/notification_pre" />
 
         <ImageButton
-            android:id="@+id/btn_praised"
+            android:id="@+id/btn_to_favor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

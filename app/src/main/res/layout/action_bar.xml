@@ -7,6 +7,7 @@
     android:background="@color/color_grey">
 
     <TextView
+        android:id="@+id/_title"
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
@@ -16,7 +17,9 @@
         android:text="@string/app_name"
         android:textSize="25dp"
         android:textColor="@color/grey_light"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:singleLine="true"
+        android:ellipsize="end" />
 
     <ImageView
         android:layout_width="wrap_content"
