@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import java.lang.reflect.Field;
+
 public abstract class BaseFragment extends Fragment{
 	public Context mContext;// 上下文
 	public View mView;

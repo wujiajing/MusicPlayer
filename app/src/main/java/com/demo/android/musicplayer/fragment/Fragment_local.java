@@ -12,13 +12,12 @@ import android.widget.ListView;
 
 import com.demo.android.musicplayer.Adapter.MusicAdapter;
 import com.demo.android.musicplayer.Base.BaseFragment;
-import com.demo.android.musicplayer.Base.music;
+
 import com.demo.android.musicplayer.MainActivity;
 import com.demo.android.musicplayer.R;
 import com.demo.android.musicplayer.Service.MusicService;
-import com.demo.android.musicplayer.Utils.MusicUtil;
-import java.util.ArrayList;
 
+import static com.demo.android.musicplayer.MainActivity.musicList;
 
 
 /**
@@ -29,7 +28,6 @@ public class Fragment_local extends BaseFragment {
 
     private ListView mListView;
     private MusicAdapter madapter;
-    private ArrayList<music> mlist;
     private ImageButton playBtn;
     View v;
     private MainActivity mainActivity;
@@ -51,30 +49,16 @@ public class Fragment_local extends BaseFragment {
         return v;
     }
 
-    /*List<music> getMusicList() {
-        return MusicUtil.getMusicData(getActivity());
-    }
-*/
     @Override
     public void initData(Bundle savedInstanceState) {
-
-        mlist = new ArrayList<>();
-        mlist = MusicUtil.getMusicData(mainActivity);
-        //把扫描到的音乐赋值给list
-        /*if (musicService.getPlayList() != mlist) {
-            musicService.setupPlayList(mlist);
-        }
-        if (musicService.getPlayList() == mlist) {
-            Log.w("musicService", "PlayList == mList");
-        }*/
-        madapter = new MusicAdapter(mainActivity,mlist);
+        madapter = new MusicAdapter(mainActivity,musicList);
         mListView.setAdapter(madapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (musicService.getPlayList()!=mlist) {
-                    musicService.setupPlayList(mlist);
-                    Log.w("musicService", "PlayList == mlist");
+                if (musicService.PlayList==null || musicService.PlayList!=musicList) {
+                    musicService.PlayList = musicList;
+                    Log.w("Fragment_local", "PlayList == musicList");
                 }
                 musicService.setCurrentCursor(position);
                 musicService.play_music(position);

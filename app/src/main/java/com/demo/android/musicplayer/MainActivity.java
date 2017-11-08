@@ -1,6 +1,5 @@
 package com.demo.android.musicplayer;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -34,12 +33,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.demo.android.musicplayer.Service.MusicService.playing;
+import static com.demo.android.musicplayer.Service.MusicService.mediaPlayer;
+import static com.demo.android.musicplayer.fragment.Fragment_favor.fListView;
+import static com.demo.android.musicplayer.fragment.Fragment_favor.fadapter;
+import static com.demo.android.musicplayer.fragment.Fragment_favor.flist;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
     private ViewPager viewPager;
-    //数据源
     private List<BaseFragment> list;
 
     private ImageView localBtn;
@@ -67,10 +68,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         musicService=new MusicService();
         favor_DBHelper=new MyDBHelper(MainActivity.this);
         databaseManager=new DatabaseManager();
-        musicList= MusicUtil.getMusicData(MainActivity.this);
-        musicService.setupPlayList(musicList);
-        Log.w("mainActivity", "PlayList == musicList");
         connection();
+        musicList= MusicUtil.getMusicData(MainActivity.this);
+        musicService.PlayList = musicList;
+        Log.w("mainActivity", "PlayList == musicList");
         //添加数据
         list = new ArrayList<BaseFragment>();
         list.add(new Fragment_local());
@@ -78,9 +79,19 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         initView();
         initContorlBtn();
         initSeekBar();
+        //监听媒体播放器
+        musicService.mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                Log.w("mediaPlayer","had been prepared");
+                prepared=true;
+            }
+        });
 
     }
-       private void initSeekBar(){
+
+    //初始化进度条
+    private void initSeekBar(){
     //进度条初始化
         seekBar = (SeekBar)this.findViewById(R.id.seekBar);
         seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
@@ -92,15 +103,13 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         viewPager = (ViewPager) findViewById(R.id.pager);
         localBtn = (ImageView) findViewById(R.id.musicbtn);
         favorBtn = (ImageView) findViewById(R.id.favorbtn);
-        //绑定监听
+        //监听按钮切换Fragment
         localBtn.setOnClickListener(this);
         favorBtn.setOnClickListener(this);
-        //设置不进行预加载
-       // viewPager.setOffscreenPageLimit(0);
         //绑定适配器
         FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager(), list);
         viewPager.setAdapter(adapter);
-        //设置viewpager切换监听
+        //设置viewpager切换监听,，默认显示播放列表界面
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageSelected(int arg0) {
@@ -114,7 +123,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         setTabSelection(0);
     }
 
-    //图标状态变更
+    //切换fragment时更改相应图标状态，同时更新收藏列表数据
     private void setTabSelection(int index) {
         localBtn.setImageResource(R.drawable.actionbar_music);
         favorBtn.setImageResource(R.drawable.desk2_btn_love_prs);
@@ -124,6 +133,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 break;
             case 1:
                 favorBtn.setImageResource(R.drawable.btn_love_prs);
+                flist = databaseManager.getFavorMusicData(favor_DBHelper);
+                fadapter = new MusicAdapter(this,flist);
+                fListView.setAdapter(fadapter);
                 break;
         }
     }
@@ -161,11 +173,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 Log.w("Click ", "play or pause music");
                 if (prepared) {
                     musicService.play();
-                    if (playing) {
-                        playBtn.setImageResource(R.drawable.notification_pause);
-                    } else {
-                        playBtn.setImageResource(R.drawable.notification_play);
-                    }
                 } else {
                     Toast.makeText(this, "请选择播放歌曲", Toast.LENGTH_SHORT).show();
                 }
@@ -193,7 +200,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                 }
                     break;
                     default:break;
-
         }
     }
 
@@ -223,38 +229,37 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     protected void onResume() {
-        //歌曲进度
+        //重新初始化
         if(prepared) {titleView.setText(musicService.getCurrentTitle());}
         if(if_favor()){
             myfavorBtn.setImageResource(R.drawable.desk2_btn_loved_prs);
         }else{
             myfavorBtn.setImageResource(R.drawable.desk2_btn_love_prs);
         }
+        if (mediaPlayer.isPlaying()) {
+            playBtn.setImageResource(R.drawable.notification_pause);
+        } else {
+            playBtn.setImageResource(R.drawable.notification_play);
+        }
+        if(prepared) {titleView.setText(musicService.getCurrentTitle());}
         seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
         seekBar.setMax(musicService.mediaPlayer.getDuration());
         handler.post(runnable);
+     //   handler1.post(runnable1);
         super.onResume();
     }
 
     public Handler handler=new Handler();
-    //更新时间
+    //更新进度条
     public Runnable runnable=new Runnable() {
         @Override
         public void run() {
-            musicService.mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    Log.w("mediaPlayer","had been prepared");
-                    prepared=true;
-                }
-            });
-            if(prepared) {
-                titleView.setText(musicService.getCurrentTitle());}
-                timeView.setText(time.format(musicService.mediaPlayer.getCurrentPosition()) + "/"
+            //更新进度条
+             timeView.setText(time.format(musicService.mediaPlayer.getCurrentPosition()) + "/"
                         + time.format(musicService.mediaPlayer.getDuration()));
-                seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
-                seekBar.setMax(musicService.mediaPlayer.getDuration());
-                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+             seekBar.setProgress(musicService.mediaPlayer.getCurrentPosition());
+             seekBar.setMax(musicService.mediaPlayer.getDuration());
+             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         if (fromUser) {
@@ -266,11 +271,20 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) { }
                 });
-                if(if_favor()){
-                    myfavorBtn.setImageResource(R.drawable.desk2_btn_loved_prs);
-                }else{
-                    myfavorBtn.setImageResource(R.drawable.desk2_btn_love_prs);
-                }
+            //当前播放歌曲显示栏
+            if(prepared) {titleView.setText(musicService.getCurrentTitle());}
+            //更新收藏图标
+            if(if_favor()){
+                myfavorBtn.setImageResource(R.drawable.desk2_btn_loved_prs);
+            }else{
+                myfavorBtn.setImageResource(R.drawable.desk2_btn_love_prs);
+            }
+            //更新播放按钮状态
+            if (mediaPlayer.isPlaying()) {
+                playBtn.setImageResource(R.drawable.notification_pause);
+            } else {
+                playBtn.setImageResource(R.drawable.notification_play);
+            }
             handler.postDelayed(runnable, 100);
         }
     };
@@ -290,7 +304,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         return super.onKeyDown(keyCode, event);
     }
 
-
     // 判断歌曲是否已收藏
     public boolean if_favor() {
         boolean favor=false;
@@ -299,4 +312,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
         return favor;
     }
+
+
 }

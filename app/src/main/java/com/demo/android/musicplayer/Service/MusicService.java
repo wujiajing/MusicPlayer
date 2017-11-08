@@ -1,25 +1,25 @@
 package com.demo.android.musicplayer.Service;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
-
+import android.util.Log;
 import com.demo.android.musicplayer.Base.music;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
 
-
-
 public class MusicService extends Service {
+
     public static MediaPlayer mediaPlayer = new MediaPlayer();
-    public ArrayList<music>  PlayList;
+    public static ArrayList<music>  PlayList = null;
     private int Cursor;
-
-    public static Boolean playing = false;
-
 
 
     //构建iBinder对象，以获取service实例
@@ -31,42 +31,21 @@ public class MusicService extends Service {
         }
     }
 
-   // public MusicService() {  }//mediaPlayer.setDataSource(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Music/我怀念的.mp3"
-
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
-    }
-
-
-    public ArrayList<music> getPlayList() {
-        return this.PlayList;
-    }
-
-    public void setupPlayList(ArrayList<music> playList) {
-        this.PlayList = playList;
-    }
-
-    private int getPlayListSize() {
-        return PlayList.size();
     }
 
     public void setCurrentCursor(int cursor) {
         this.Cursor = cursor;
     }
 
-    public int getCurrentCursor() {
-        return this.Cursor;
-    }
-
-    //播放
+    //播放与暂停
     public void play() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
-            playing = false;
         } else {
             mediaPlayer.start();
-            playing = true;
         }
     }
 
@@ -82,22 +61,14 @@ public class MusicService extends Service {
 
     //下一首
     public void play_next() {
-        if (Cursor == PlayList.size() - 1) {
-            setCurrentCursor(0);
-        } else {
-            setCurrentCursor(Cursor+1);
-        }
-        play_music(Cursor);
+            if (Cursor == PlayList.size() - 1) {
+              setCurrentCursor(0);
+          } else {
+              setCurrentCursor(Cursor + 1);
+          }
+            play_music(Cursor);
     }
 
-  //判断歌曲是否已收藏
-   /* public boolean if_favor() {
-        boolean favor=false;
-        if (getCurrentTitle()!=null) {
-        favor= databaseManager.findData(favor_DBHelper,getCurrentTitle());
-        }
-        return favor;
-    }*/
 
     public void play_music(int cursor) {
         mediaPlayer.reset();
@@ -105,22 +76,12 @@ public class MusicService extends Service {
             mediaPlayer.setDataSource(PlayList.get(cursor).getPath());
             mediaPlayer.prepare();
             mediaPlayer.start();
-            playing = true;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void setTime(int cursor){
-    }
 
-
-  /*  public int getCurrentId() {
-        int s=0;
-        if (PlayList != null)
-            s=PlayList.get(Cursor).getId();
-        return s;
-    }*/
     public String getCurrentTitle() {
         String s=null;
         if (PlayList != null)
@@ -149,37 +110,47 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         //回收资源
-       // if(mediaPlayer != null && mediaPlayer.isPlaying()) {
+        if(mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = null;
-       // }
+        }
+            unregisterReceiver(mReceiver);
             super.onDestroy();
     }
 
     @Override
     public void onCreate() {
         try{
-            // mediaPlayer.reset();
-            //mediaPlayer.setDataSource(PlayList.get(0).getUrl());
             mediaPlayer.prepare();
         }catch (Exception e){
             e.printStackTrace();
         }
         mediaPlayer.setOnCompletionListener(mOnCompletionListener);
+        registerReceiver(mReceiver,new IntentFilter(Intent.ACTION_HEADSET_PLUG));
         super.onCreate();
     }
 
     public MediaPlayer.OnCompletionListener mOnCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
-            if (PlayList!=null) {
                 play_next();
-            }
         }
     };
 
-
+    //设置广播监听，当拔出耳机时音乐暂停
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action=intent.getAction();
+            if (Intent.ACTION_HEADSET_PLUG.equals(action)) {
+                Log.w("Broadcast","Received");
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                }
+            }
+        }
+    };
 
 
 }

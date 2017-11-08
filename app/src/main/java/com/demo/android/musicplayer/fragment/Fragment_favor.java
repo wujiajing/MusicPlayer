@@ -30,12 +30,13 @@ public class Fragment_favor extends BaseFragment {
 
     private MainActivity mainActivity;
     private MusicService musicService;
-    private ListView fListView;
-    private MusicAdapter fadapter;
-    private ArrayList<music> flist;
+    public static ListView fListView;
+    public static MusicAdapter fadapter;
+    public static ArrayList<music> flist;
     private ImageButton playBtn;
     private DatabaseManager databaseManager;
     private MyDBHelper favor_DBHelper;
+    View v;
 
 
     @Override
@@ -51,10 +52,10 @@ public class Fragment_favor extends BaseFragment {
     @Override
     public View initView(LayoutInflater inflater) {
         //添加页面布局
-        View view = inflater.inflate(R.layout.fragment_2, null);
+        v = inflater.inflate(R.layout.fragment_2, null);
         playBtn = (ImageButton) mainActivity.findViewById(R.id.btn_play);
-        fListView = (ListView) view.findViewById(R.id.listView2);
-        return view;
+        fListView = (ListView) v.findViewById(R.id.listView2);
+        return v;
     }
 
     @Override
@@ -67,8 +68,8 @@ public class Fragment_favor extends BaseFragment {
         fListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (musicService.getPlayList()!=flist) {
-                    musicService.setupPlayList(flist);
+                if (musicService.PlayList==null || musicService.PlayList!=flist) {
+                    musicService.PlayList=flist;
                     Log.w("musicService","PlayList == fList");
                 }
                 musicService.setCurrentCursor(position);
@@ -77,4 +78,7 @@ public class Fragment_favor extends BaseFragment {
             }
         });
     }
+
 }
+
+

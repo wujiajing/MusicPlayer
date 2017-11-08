@@ -4,7 +4,7 @@
     android:layout_height="55dp"
     android:layout_alignParentTop="true"
     android:id="@+id/my_action_bar"
-    android:background="@color/color_grey">
+    android:background="@color/color_black">
 
     <TextView
         android:id="@+id/_title"
@@ -16,7 +16,7 @@
         android:gravity="center|left"
         android:text="@string/app_name"
         android:textSize="25dp"
-        android:textColor="@color/grey_light"
+        android:textColor="@color/pink"
         android:layout_alignParentStart="true"
         android:singleLine="true"
         android:ellipsize="end" />
